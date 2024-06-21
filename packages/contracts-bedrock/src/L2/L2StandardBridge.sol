@@ -54,19 +54,26 @@ contract L2StandardBridge is StandardBridge, ISemver {
     /// @custom:semver 1.10.0
     string public constant version = "1.10.0";
 
+    /// @notice The address of L1 USDC address.
+    // solhint-disable-next-line var-name-mixedcase
+    address public immutable l1USDC;
+
+    /// @notice The address of L2 USDC address.
+    address public immutable l2USDC;
+
     /// @notice Constructs the L2StandardBridge contract.
     constructor(address _l1USDC, address _l2USDC) StandardBridge() {
-        initialize({ _otherBridge: StandardBridge(payable(address(0))), _l1USDC: _l1USDC, _l2USDC: _l2USDC });
+        initialize({ _otherBridge: StandardBridge(payable(address(0))) });
+        l1USDC = _l1USDC;
+        l2USDC = _l2USDC;
     }
 
     /// @notice Initializer.
     /// @param _otherBridge Contract for the corresponding bridge on the other chain.
-    function initialize(StandardBridge _otherBridge, address _l1USDC, address _l2USDC) public initializer {
+    function initialize(StandardBridge _otherBridge) public initializer {
         __StandardBridge_init({
             _messenger: CrossDomainMessenger(Predeploys.L2_CROSS_DOMAIN_MESSENGER),
-            _otherBridge: _otherBridge,
-            _l1USDC: _l1USDC,
-            _l2USDC: _l2USDC
+            _otherBridge: _otherBridge
         });
     }
 
@@ -147,6 +154,11 @@ contract L2StandardBridge is StandardBridge, ISemver {
     {
         address l1Token = l1USDC;
         _initiateBridgeERC20(_l2Token, l1Token, _from, _to, _amount, _minGasLimit, _extraData);
+    }
+
+    /// @inheritdoc StandardBridge
+    function _isCorrectTokenPair(address _mintableToken, address _otherToken) internal view override returns (bool) {
+        return (_mintableToken == l2USDC && _otherToken == l1USDC);
     }
 
     /// @notice Emits the legacy WithdrawalInitiated event followed by the ERC20BridgeInitiated

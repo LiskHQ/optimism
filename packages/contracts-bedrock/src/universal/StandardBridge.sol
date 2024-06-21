@@ -23,13 +23,6 @@ abstract contract StandardBridge is Initializable {
     /// @notice Mapping that stores deposits for a given pair of local and remote tokens.
     mapping(address => mapping(address => uint256)) public deposits;
 
-    /// @notice The address of L1 USDC address.
-    // solhint-disable-next-line var-name-mixedcase
-    address public immutable l1USDC;
-
-    /// @notice The address of L2 USDC address.
-    address public immutable l2USDC;
-
     /// @notice Messenger contract on this domain.
     /// @custom:network-specific
     CrossDomainMessenger public messenger;
@@ -97,17 +90,13 @@ abstract contract StandardBridge is Initializable {
     /// @param _otherBridge Contract for the other StandardBridge contract.
     function __StandardBridge_init(
         CrossDomainMessenger _messenger,
-        StandardBridge _otherBridge,
-        address _l1USDC,
-        address _l2USDC
+        StandardBridge _otherBridge
     )
         internal
         onlyInitializing
     {
         messenger = _messenger;
         otherBridge = _otherBridge;
-        l1USDC = _l1USDC;
-        l2USDC = _l2USDC;
     }
 
     /// @notice Returns the address of the custom gas token and the token's decimals.
@@ -283,10 +272,7 @@ abstract contract StandardBridge is Initializable {
      *
      * @return True if the other token is the correct pair token for the OptimismMintableERC20.
      */
-    function _isCorrectTokenPair(address _mintableToken, address _otherToken) internal view returns (bool) {
-        return
-            ((_mintableToken == l1USDC && _otherToken == l2USDC) || (_mintableToken == l2USDC && _otherToken == l1USDC));
-    }
+    function _isCorrectTokenPair(address _mintableToken, address _otherToken) internal view virtual returns (bool);
 
     /// @notice Emits the ERC20BridgeInitiated event and if necessary the appropriate legacy
     ///         event when an ERC20 bridge is initiated to the other chain.

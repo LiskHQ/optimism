@@ -58,6 +58,13 @@ contract L1StandardBridge is StandardBridge, ISemver {
     /// @custom:semver 2.2.0
     string public constant version = "2.2.0";
 
+    /// @notice The address of L1 USDC address.
+    // solhint-disable-next-line var-name-mixedcase
+    address public immutable l1USDC;
+
+    /// @notice The address of L2 USDC address.
+    address public immutable l2USDC;
+
     /// @notice Address of the SuperchainConfig contract.
     SuperchainConfig public superchainConfig;
 
@@ -70,10 +77,11 @@ contract L1StandardBridge is StandardBridge, ISemver {
             _messenger: CrossDomainMessenger(address(0)),
             _superchainConfig: SuperchainConfig(address(0)),
             _systemConfig: SystemConfig(address(0)),
-            _otherBridgeAddress: _otherBridge,
-            _l1USDC: _l1USDC,
-            _l2USDC: _l2USDC
+            _otherBridgeAddress: _otherBridge
         });
+
+        l1USDC = _l1USDC;
+        l2USDC = _l2USDC;
     }
 
     /// @notice Initializer.
@@ -84,9 +92,7 @@ contract L1StandardBridge is StandardBridge, ISemver {
         CrossDomainMessenger _messenger,
         SuperchainConfig _superchainConfig,
         SystemConfig _systemConfig,
-        address _otherBridgeAddress,
-        address _l1USDC,
-        address _l2USDC
+        address _otherBridgeAddress
     )
         public
         initializer
@@ -95,9 +101,7 @@ contract L1StandardBridge is StandardBridge, ISemver {
         systemConfig = _systemConfig;
         __StandardBridge_init({
             _messenger: _messenger,
-            _otherBridge: StandardBridge(payable(_otherBridgeAddress)),
-            _l1USDC: _l1USDC,
-            _l2USDC: _l2USDC
+            _otherBridge: StandardBridge(payable(_otherBridgeAddress))
         });
     }
 
@@ -216,6 +220,11 @@ contract L1StandardBridge is StandardBridge, ISemver {
         internal
     {
         _initiateBridgeERC20(_l1Token, _l2Token, _from, _to, _amount, _minGasLimit, _extraData);
+    }
+
+    /// @inheritdoc StandardBridge
+    function _isCorrectTokenPair(address _mintableToken, address _otherToken) internal view override returns (bool) {
+        return (_mintableToken == l1USDC && _otherToken == l2USDC);
     }
 
     /// @inheritdoc StandardBridge
