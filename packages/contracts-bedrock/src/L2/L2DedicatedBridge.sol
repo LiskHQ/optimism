@@ -59,16 +59,16 @@ contract L2DedicatedBridge is DedicatedBridge, ISemver {
     address public l2Token;
 
     /// @notice Constructs the L2DedicatedBridge contract.
-    constructor(address _l1Token, address _l2Token) DedicatedBridge() {
-        initialize({ _otherBridge: DedicatedBridge(payable(address(0))), _l1Token: _l1Token, _l2Token: _l2Token });
+    constructor(address _otherBridge, address _l1Token, address _l2Token) DedicatedBridge() {
+        initialize({ _otherBridge: _otherBridge, _l1Token: _l1Token, _l2Token: _l2Token });
     }
 
     /// @notice Initializer.
     /// @param _otherBridge Contract for the corresponding bridge on the other chain.
-    function initialize(DedicatedBridge _otherBridge, address _l1Token, address _l2Token) public initializer {
+    function initialize(address _otherBridge, address _l1Token, address _l2Token) public initializer {
         __StandardBridge_init({
             _messenger: CrossDomainMessenger(Predeploys.L2_CROSS_DOMAIN_MESSENGER),
-            _otherBridge: _otherBridge
+            _otherBridge: DedicatedBridge(payable(_otherBridge))
         });
         l1Token = _l1Token;
         l2Token = _l2Token;

@@ -180,7 +180,6 @@ contract DeployConfig is Script {
 
         l1CrossDomainMessengerProxy = stdJson.readAddress(_json, "$.l1CrossDomainMessengerProxy");
         systemConfigProxy = stdJson.readAddress(_json, "$.systemConfigProxy");
-
     }
 
     function fork() public view returns (Fork fork_) {
