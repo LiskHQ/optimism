@@ -10,11 +10,11 @@ import { Initializable } from "@openzeppelin/contracts/proxy/utils/Initializable
 import { Constants } from "src/libraries/Constants.sol";
 
 /// @custom:upgradeable
-/// @title StandardBridge
-/// @notice StandardBridge is a base contract for the L1 and L2 standard ERC20 bridges. It handles
+/// @title DedicatedBridge
+/// @notice DedicatedBridge is a base contract for the L1 and L2 dedicated ERC20 bridges. It handles
 ///         the core bridging logic, including escrowing tokens that are native to the local chain
 ///         and minting/burning tokens that are native to the remote chain.
-abstract contract StandardBridge is Initializable {
+abstract contract DedicatedBridge is Initializable {
     using SafeERC20 for IERC20;
 
     /// @notice The L2 gas limit set when eth is depoisited using the receive() function.
@@ -29,7 +29,7 @@ abstract contract StandardBridge is Initializable {
 
     /// @notice Corresponding bridge on the other domain.
     /// @custom:network-specific
-    StandardBridge public otherBridge;
+    DedicatedBridge public otherBridge;
 
     /// @notice Reserve extra slots (to a total of 50) in the storage layout for future upgrades.
     ///         A gap size of 45 was chosen here, so that the first slot used in a child contract
@@ -72,7 +72,7 @@ abstract contract StandardBridge is Initializable {
     ///         calling code within their constructors, but also doesn't really matter since we're
     ///         just trying to prevent users accidentally depositing with smart contract wallets.
     modifier onlyEOA() {
-        require(!Address.isContract(msg.sender), "StandardBridge: function can only be called from an EOA");
+        require(!Address.isContract(msg.sender), "DedicatedBridge: function can only be called from an EOA");
         _;
     }
 
@@ -80,17 +80,17 @@ abstract contract StandardBridge is Initializable {
     modifier onlyOtherBridge() {
         require(
             msg.sender == address(messenger) && messenger.xDomainMessageSender() == address(otherBridge),
-            "StandardBridge: function can only be called from the other bridge"
+            "DedicatedBridge: function can only be called from the other bridge"
         );
         _;
     }
 
     /// @notice Initializer.
     /// @param _messenger   Contract for CrossDomainMessenger on this network.
-    /// @param _otherBridge Contract for the other StandardBridge contract.
+    /// @param _otherBridge Contract for the other DedicatedBridge contract.
     function __StandardBridge_init(
         CrossDomainMessenger _messenger,
-        StandardBridge _otherBridge
+        DedicatedBridge _otherBridge
     )
         internal
         onlyInitializing
@@ -120,7 +120,7 @@ abstract contract StandardBridge is Initializable {
     ///         Public getter is legacy and will be removed in the future. Use `otherBridge` instead.
     /// @return Contract of the bridge on the other network.
     /// @custom:legacy
-    function OTHER_BRIDGE() external view returns (StandardBridge) {
+    function OTHER_BRIDGE() external view returns (DedicatedBridge) {
         return otherBridge;
     }
 
@@ -178,7 +178,7 @@ abstract contract StandardBridge is Initializable {
     }
 
     /// @notice Finalizes an ERC20 bridge on this chain. Can only be triggered by the other
-    ///         StandardBridge contract on the remote chain.
+    ///         DedicatedBridge contract on the remote chain.
     /// @param _localToken  Address of the ERC20 on this chain.
     /// @param _remoteToken Address of the corresponding token on the remote chain.
     /// @param _from        Address of the sender.
@@ -198,10 +198,10 @@ abstract contract StandardBridge is Initializable {
         public
         onlyOtherBridge
     {
-        require(paused() == false, "StandardBridge: paused");
+        require(paused() == false, "DedicatedBridge: paused");
         require(
             _isCorrectTokenPair(_localToken, _remoteToken),
-            "StandardBridge: wrong remote token for Optimism Mintable ERC20 local token"
+            "DedicatedBridge: wrong remote token for Optimism Mintable ERC20 local token"
         );
         deposits[_localToken][_remoteToken] = deposits[_localToken][_remoteToken] - _amount;
         IERC20(_localToken).safeTransfer(_to, _amount);
@@ -231,11 +231,11 @@ abstract contract StandardBridge is Initializable {
     )
         internal
     {
-        require(msg.value == 0, "StandardBridge: cannot send value");
-        require(paused() == false, "StandardBridge: paused");
+        require(msg.value == 0, "DedicatedBridge: cannot send value");
+        require(paused() == false, "DedicatedBridge: paused");
         require(
             _isCorrectTokenPair(_localToken, _remoteToken),
-            "StandardBridge: wrong remote token for Optimism Mintable ERC20 local token"
+            "DedicatedBridge: wrong remote token for Optimism Mintable ERC20 local token"
         );
         IERC20(_localToken).safeTransferFrom(_from, address(this), _amount);
         deposits[_localToken][_remoteToken] = deposits[_localToken][_remoteToken] + _amount;
