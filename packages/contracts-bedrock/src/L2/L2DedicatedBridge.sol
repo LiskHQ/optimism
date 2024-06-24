@@ -8,7 +8,6 @@ import { CrossDomainMessenger } from "src/universal/CrossDomainMessenger.sol";
 import { L1Block } from "src/L2/L1Block.sol";
 
 /// @custom:proxied
-/// @custom:predeploy 0x4200000000000000000000000000000000000010
 /// @title L2DedicatedBridge
 /// @notice The L2DedicatedBridge is responsible for transfering a single ERC20 tokens between L1 and
 ///         L2. In the case that an ERC20 token is native to L2, it will be escrowed within this
@@ -54,10 +53,10 @@ contract L2DedicatedBridge is DedicatedBridge, ISemver {
 
     /// @notice The address of L1 token address.
     // solhint-disable-next-line var-name-mixedcase
-    address public immutable l1Token;
+    address public l1Token;
 
     /// @notice The address of L2 token address.
-    address public immutable l2Token;
+    address public l2Token;
 
     /// @notice Constructs the L2DedicatedBridge contract.
     constructor(address _l1Token, address _l2Token) DedicatedBridge() {

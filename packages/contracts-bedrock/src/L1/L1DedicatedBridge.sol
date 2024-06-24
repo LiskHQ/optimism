@@ -62,41 +62,32 @@ contract L1DedicatedBridge is DedicatedBridge, ISemver {
 
     /// @notice The address of L1 token.
     // solhint-disable-next-line var-name-mixedcase
-    address public immutable l1Token;
+    address public l1Token;
 
     /// @notice The address of L2 token.
-    address public immutable l2Token;
+    address public l2Token;
 
     /// @notice Constructs the L1DedicatedBridge contract.
-    constructor(
-        CrossDomainMessenger _messenger,
-        SuperchainConfig _superchainConfig,
-        SystemConfig _systemConfig,
-        address _otherBridgeAddress,
-        address _l1Token,
-        address _l2Token
-    )
-        DedicatedBridge()
-    {
+    constructor() DedicatedBridge() {
         initialize({
-            _messenger: _messenger,
-            _superchainConfig: _superchainConfig,
-            _systemConfig: _systemConfig,
-            _otherBridgeAddress: _otherBridgeAddress,
-            _l1Token: _l1Token,
-            _l2Token: _l2Token
+            _messenger: CrossDomainMessenger(address(0)),
+            _superchainConfig: SuperchainConfig(address(0)),
+            _systemConfig: SystemConfig(address(0)),
+            _otherBridge: address(0),
+            _l1Token: address(0),
+            _l2Token: address(0)
         });
     }
 
     /// @notice Initializer.
     /// @param _messenger        Contract for the CrossDomainMessenger on this network.
     /// @param _superchainConfig Contract for the SuperchainConfig on this network.
-    /// @param _otherBridgeAddress      Contract for the other DedicatedBridge contract.
+    /// @param _otherBridge      Contract for the other DedicatedBridge contract.
     function initialize(
         CrossDomainMessenger _messenger,
         SuperchainConfig _superchainConfig,
         SystemConfig _systemConfig,
-        address _otherBridgeAddress,
+        address _otherBridge,
         address _l1Token,
         address _l2Token
     )
@@ -105,7 +96,7 @@ contract L1DedicatedBridge is DedicatedBridge, ISemver {
     {
         superchainConfig = _superchainConfig;
         systemConfig = _systemConfig;
-        __StandardBridge_init({ _messenger: _messenger, _otherBridge: DedicatedBridge(payable(_otherBridgeAddress)) });
+        __StandardBridge_init({ _messenger: _messenger, _otherBridge: DedicatedBridge(payable(_otherBridge)) });
         l1Token = _l1Token;
         l2Token = _l2Token;
     }
@@ -226,7 +217,14 @@ contract L1DedicatedBridge is DedicatedBridge, ISemver {
     /// @param _to        Address of the recipient on L1.
     /// @param _amount    Amount of the ERC20 to withdraw.
     /// @param _extraData Optional data forwarded from L2.
-    function finalizeL2TokenWithdrawal(address _from, address _to, uint256 _amount, bytes calldata _extraData) external {
+    function finalizeL2TokenWithdrawal(
+        address _from,
+        address _to,
+        uint256 _amount,
+        bytes calldata _extraData
+    )
+        external
+    {
         finalizeBridgeERC20(l1Token, l2Token, _from, _to, _amount, _extraData);
     }
 
