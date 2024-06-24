@@ -1,13 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { L1DedicatedBridge } from "src/L1/L1DedicatedBridge.sol";
-import { ISemver } from "src/universal/ISemver.sol";
-import { CrossDomainMessenger } from "src/universal/CrossDomainMessenger.sol";
-import { SuperchainConfig } from "src/L1/SuperchainConfig.sol";
-import { OptimismPortal } from "src/L1/OptimismPortal.sol";
-import { SystemConfig } from "src/L1/SystemConfig.sol";
 
 /// @custom:proxied
 /// @title L1DedicatedUSDCBridge

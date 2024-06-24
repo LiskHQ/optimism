@@ -59,8 +59,8 @@ contract L2DedicatedBridge is DedicatedBridge, ISemver {
     address public l2Token;
 
     /// @notice Constructs the L2DedicatedBridge contract.
-    constructor(address _otherBridge, address _l1Token, address _l2Token) DedicatedBridge() {
-        initialize({ _otherBridge: _otherBridge, _l1Token: _l1Token, _l2Token: _l2Token });
+    constructor() DedicatedBridge() {
+        initialize({ _otherBridge: address(0), _l1Token: address(0), _l2Token: address(0) });
     }
 
     /// @notice Initializer.
