@@ -8,7 +8,6 @@ import { Deployer } from "scripts/Deployer.sol";
 import { SystemConfig } from "src/L1/SystemConfig.sol";
 import { Constants } from "src/libraries/Constants.sol";
 import { L1StandardBridge } from "src/L1/L1StandardBridge.sol";
-import { L1DedicatedBridge } from "src/L1/L1DedicatedBridge.sol";
 import { L2OutputOracle } from "src/L1/L2OutputOracle.sol";
 import { DisputeGameFactory } from "src/dispute/DisputeGameFactory.sol";
 import { DelayedWETH } from "src/dispute/weth/DelayedWETH.sol";
