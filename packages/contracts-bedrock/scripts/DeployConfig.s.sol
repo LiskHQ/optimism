@@ -91,6 +91,9 @@ contract DeployConfig is Script {
 
     bool public useInterop;
 
+    address public systemConfigProxy;
+    address public l1CrossDomainMessengerProxy;
+
     function read(string memory _path) public {
         console.log("DeployConfig: reading file %s", _path);
         try vm.readFile(_path) returns (string memory data) {
@@ -174,6 +177,9 @@ contract DeployConfig is Script {
         customGasTokenAddress = _readOr(_json, "$.customGasTokenAddress", address(0));
 
         useInterop = _readOr(_json, "$.useInterop", false);
+
+        l1CrossDomainMessengerProxy = stdJson.readAddress(_json, "$.l1CrossDomainMessengerProxy");
+        systemConfigProxy = stdJson.readAddress(_json, "$.systemConfigProxy");
     }
 
     function fork() public view returns (Fork fork_) {
